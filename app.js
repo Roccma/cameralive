@@ -8,10 +8,11 @@ const port = process.env.PORT || 3000;
 app.use(express.static(__dirname + "/public"));
 
 app.get('/', (req, res) => {
-	res.redirect('index.html');		
+	res.redirect('emitir.html');		
 });
 
 io.on('connection', (socket) => {
+	console.log('Nuevo usuario! ' + socket.id);
 	socket.on('stream', (image) => {
 		socket.broadcast.emit('stream', image);
 	});
