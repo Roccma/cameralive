@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<title>Camera Live</title>
+	<script type="text/javascript" src = "https://code.jquery.com/jquery-3.3.1.min.js"></script>
+	<script type="text/javascript" src = "/socket.io/socket.io.js"></script>
+</head>	
+<body>
+	<video src = "" id = "video" autoplay style = "width: 800px, height: 600px, margin: 0 auto"></video>
+	<canvas id = "preview" style = "display: none"></canvas>
+	<!--
+	<div id = "logger"></div>-->
+	<script type="text/javascript">
+    	/*let maxWidth = $(window).width();
+    	let maxHeight = $(window).height();
+    	$('#video').attr('height', maxHeight);
+    	$('#video').attr('width', maxWidth);*/
+    	//alert(maxWidth + " - " + maxHeight);
+		let canvas = document.getElementById('preview');
+		let context = canvas.getContext('2d');
+
+		canvas.height = 600;
+		canvas.width = 800;
+
+		context.height = canvas.height;
+		context.width = canvas.width;
+
+		let video = document.getElementById('video');
+
+		let socket = io();
+
+		function logger(msg){
+			$('#logger').text(msg);
+		}
+
+		function camSuccess(stream){
+			video.src = window.URL.createObjectURL(stream);
+			logger("Cámara captada con éxito");
+		}
+
+		function camFail(){
+			logger("Cámara con error");
+		}
+
+		function viewVideo(video, context){
+			context.drawImage(video, 0, 0, context.width, context.height);
+			socket.emit('stream', canvas.toDataURL('image/webp'));
+		}
+
+		$(function(){
+			navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msgGetUserMedia);
+			if(navigator.getUserMedia){
+				navigator.getUserMedia({video : true}, camSuccess, camFail);
+			}
+
+			setInterval(function(){
+				viewVideo(video, context);
+			}, 45);
+		});
+
+	</script>
+</body>
+</html>
